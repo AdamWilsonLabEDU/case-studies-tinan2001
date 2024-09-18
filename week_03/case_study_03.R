@@ -15,7 +15,12 @@ data <- gapminder
 
 ## GDPperCap vs Life Expectancy 
 data_noK <- data %>%
-  filter (country != "Kuwait" )
+  filter (country != "Kuwait")
+
+## Can also be piped using this |>
+
+data_difpipe <- data |>
+  filter (country != "Kuwait")
 
 GDPvLife <- (
 
@@ -23,7 +28,7 @@ ggplot(data_noK, aes(x= lifeExp, y = gdpPercap, color = continent, fill = pop, s
 geom_point()+
 facet_wrap(~year,nrow = 1)+
 scale_y_continuous(trans = "sqrt")+
-scale_x_continuous(limits = c(0,100), breaks = seq ( 0, 100, 20))+
+scale_x_continuous(limits = c(20,80), breaks = seq ( 20, 80, 20))+
 theme_bw()+
 theme(axis.text=element_text(size=8), panel.spacing = unit(1, "lines"))+
 labs (x = "Life Expectancy", y = "GDP Per Capita",
@@ -36,28 +41,31 @@ ggsave(filename = here ("week_03", "GDP v LifeExp.png"), plot = last_plot(), wid
 
 ##GDPperCap vs Year
 
-gapminder_continent <- data_noK %>%
-  group_by(continent, year)
-  
-gapminder_weighted <- gapminder_continent %>%
-    summarize(gdpweighted = weighted.mean(x = gdpPercap, w = pop),
-            pop = sum(as.numeric(pop)))
+# gapminder_continent <- data_noK %>%
+#   group_by(continent, year)
+#   
+# gapminder_weighted <- gapminder_continent %>%
+#     summarize(gdpweighted = weighted.mean(x = gdpPercap, w = pop),
+#             pop = sum(as.numeric(pop)))
 
+gapminder_continent2 <- data_noK %>%
+  group_by(continent, year) %>%
+  summarize(gdpweighted = weighted.mean(x = gdpPercap, w = pop),
+            pop = sum(as.numeric(pop)))
 GDPvYear <- (
   ggplot ()+
 #----------------- 
-  geom_line(data = gapminder_continent,
+  geom_line(data = data_noK,
             aes(year, gdpPercap, colour = continent, group= country))+
-  geom_point(data = gapminder_continent,
+  geom_point(data = data_noK,
              aes(year,gdpPercap, colour = continent,size = pop/100000, fill = pop))+
 #-----------------
-  geom_line(data = gapminder_weighted,
+  geom_line(data = gapminder_continent2,
             aes (year,gdpweighted, group = continent))+
-  geom_point(data = gapminder_weighted,
+  geom_point(data = gapminder_continent2,
              aes(year,gdpweighted, size = pop/100000, fill = pop))+
   #-----------------
-  facet_wrap(~continent,nrow = 1)+
-  
+  facet_wrap (~continent, nrow = 1)+
   theme_bw()+
   theme(axis.text = element_text(size = 8), panel.spacing = unit(1, "lines"))+
   labs(x = "Year", y = "GDP per Capita", size = "Population (100k)", colour = "Continent")+
