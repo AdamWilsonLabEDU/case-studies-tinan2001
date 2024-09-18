@@ -26,4 +26,4 @@ To test whether the code passes before you submit to GitHub, run the following l
 library(testthat)
 test_dir(test_path(), reporter="Summary")
 ```
-
+##Coursework for Spatial Data Science
