@@ -18,9 +18,8 @@ data_noK <- data %>%
   filter (country != "Kuwait")
 
 ## Can also be piped using this |>
-
-data_difpipe <- data |>
-  filter (country != "Kuwait")
+# data_difpipe <- data |>
+#   filter (country != "Kuwait")
 
 GDPvLife <- (
 
@@ -75,6 +74,7 @@ GDPvYear <- (
   ggsave(filename = here ("week_03","GDP vs Year.png"), plot = last_plot(), width = 17, height = 5)
 
 #Both graphs
+  
   ggarrange(GDPvLife, GDPvYear, ncol= 1, nrow= 2)
   ggsave (filename = here ("week_03", "GPD vs Year and GDP vs Life Exp.png"), plot = last_plot(), width = 25, height = 10)
 
