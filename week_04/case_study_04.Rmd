@@ -1,22 +1,46 @@
 ---
 title: "Case Study 04"
-author: Your Name
-date: August 1, 2020
+author: Tina Ni
+date: September 24, 2024
 output: github_document
 ---
 
-## First Header
+# Case Study Goal
+## What is the full name of the destination airport -- Farthest from any of the NYC airports? -- Assign this value as "farthest_airport"
 
-Comments
 
-```{r}
-summary(cars)
+```{r Packages} 
+library (tidyverse)
+library (nycflights13)
+
+flights <- flights
+airlines <- airlines
+planes <- planes
+airports <- airports
+weather <- weather
 ```
 
-## Second Header
-
+## Data Arragement 
 Comments
 
 ```{r}
-plot(pressure)
+LongtoShortFlights <- flights %>%
+  select (origin, dest, distance) %>%
+  filter (origin == "JFK" |origin == "EWR"| origin == "LGA") %>%
+  arrange(desc(distance))
+
+port_names <- airports %>%
+  select (faa, name)
+
+```
+##Merging flights and airports
+```{r}
+mergeflights <- LongtoShortFlights %>%
+  left_join(port_names, c("dest" = "faa"))
+```
+
+##Output the farthest airport from any of the NYC airports
+```{r}
+print (farthest_airport <- mergeflights$name[1])
+
 ```
