@@ -24,7 +24,7 @@ weather <- weather
 Comments
 
 ```{r}
-LongtoShortFlights <- flights %>%
+flight_dist_desc <- flights %>%
   select (origin, dest, distance) %>%
   filter (origin == "JFK" |origin == "EWR"| origin == "LGA") %>%
   arrange(desc(distance))
@@ -35,7 +35,7 @@ port_names <- airports %>%
 ```
 ##Merging flights and airports
 ```{r}
-mergeflights <- LongtoShortFlights %>%
+mergeflights <- flight_dist_desc %>%
   left_join(port_names, c("dest" = "faa"))
 ```
 
