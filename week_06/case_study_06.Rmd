@@ -23,6 +23,7 @@ download.file("https://crudata.uea.ac.uk/cru/data/temperature/absolute.nc","crud
 tmean = rast ('crudata.nc')
 max_val_pix = max(tmean)
 
+#max pixel within a boundary which is basically continent
 max_temp_country <- terra::extract (max_val_pix, world,  fun = max, na.rm = TRUE, small =T)
 
 world_clim <- bind_cols(world, max_temp_country)
