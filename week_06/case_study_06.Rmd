@@ -1,7 +1,47 @@
 ---
 title: "Case Study 06"
-author: Your Name
-date: August 1, 2020
+author: Tina Ni
+date: October 8, 2024
 output: github_document
 ---
- 
+```{r load packages}
+library(terra)
+library(spData)
+library(tidyverse)
+library(sf)
+library(ncdf4)
+library(ggplot2)
+```
+
+```{r download data}
+download.file("https://crudata.uea.ac.uk/cru/data/temperature/absolute.nc","crudata.nc", method = "curl")
+```
+
+```{r making data}
+#tmean is climate data
+
+tmean = rast ('crudata.nc')
+max_val_pix = max(tmean)
+
+max_temp_country <- terra::extract (max_val_pix, world,  fun = max, na.rm = TRUE, small =T)
+
+world_clim <- bind_cols(world, max_temp_country)
+```
+
+```{r plot data}
+ggplot(data = world_clim)+
+  geom_sf(aes(fill = max))+
+  scale_fill_viridis_c (name="Maximum/nTemperature (C)")+
+  theme(legend.position = 'bottom')
+```
+
+```{r make table about hottest continents}
+hottest_continents <- world_clim |>
+  group_by(continent)|>
+  top_n(1,max)|>
+  arrange(desc(max)) |>
+  st_set_geometry(NULL) |>
+  select(name_long,continent, max)
+
+hottest_continents
+```
