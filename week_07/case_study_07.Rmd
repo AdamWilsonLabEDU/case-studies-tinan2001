@@ -1,7 +1,22 @@
 ---
 title: "Case Study 07"
-author: Your Name
-date: August 1, 2020
+author: Tina Ni
+date: October 15, 2024
 output: github_document
 ---
  
+```{r}
+#reprex generates your copied code to something that is reproducible for others to view
+library(tidyverse)
+library(reprex)
+library(sf)
+library(spData)
+data(world)
+
+ggplot(world,aes(x=gdpPercap, y=continent, color=continent))+
+   geom_density(alpha=0.5,color=F)
+
+# copy all code onto clipboard
+
+reprex(venue="gh")
+```
