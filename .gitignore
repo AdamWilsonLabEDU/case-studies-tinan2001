@@ -15,4 +15,5 @@
 .h5
 .ppt
 .pptx
+*data*
 tests/testthat/test-case_studies.R
