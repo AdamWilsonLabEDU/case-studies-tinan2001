@@ -94,7 +94,6 @@ gplot(lulc)+
   coord_equal()+
   theme(legend.position = "right")+
   guides(fill=guide_legend(ncol=1,byrow=TRUE))
-
 ```
 
 ```{r}
@@ -134,7 +133,6 @@ ggplot(data = c_dates_lst, aes(x = dates, y = Vertical_lst_data_extract))+
 # Summerize weekly data to monthly climatologies
 lst_month <- tapp(x = lst,index = 'month', fun = "mean", na.rm = TRUE)
 
-
 #Layer names to Month names
 names(lst_month)=month.name[as.numeric(str_replace(names(lst_month),"m_",""))]
 ```
@@ -148,7 +146,6 @@ gplot(lst_month)+
   theme( axis.title = element_blank(), axis.text = element_blank())
 ```
 ```{r}
-library (gtsummary)
 monthly_means <- global(lst_month, mean, na.rm = TRUE)
 kable(monthly_means,col.names = "Mean", align = "cc")
 ```
