@@ -1,0 +1,36 @@
+---
+title: "Case Study 08"
+author: "Tina Ni"
+format:
+ html: default
+ gfm: default
+ pptx: default
+ docx: default
+date: today
+---
+
+```{r, include= FALSE}
+
+
+library(tidyverse)
+dataurl = "ftp://aftp.cmdl.noaa.gov/products/trends/co2/co2_annmean_mlo.txt"
+httr:: GET("https://gml.noaa.gov/ccgg/trends/data.html")
+data = read.table(file = dataurl, sep = " ")
+newdata = data %>%
+  select("V3", "V6", "V11")
+colnames(newdata) =  c("Year","Mean","Unc")
+
+```
+
+```{r, echo = FALSE}
+ggplot(newdata, aes(x = Year, y = Mean))+
+geom_line()+
+labs(title = "Annual Average CO2", subtitle = "From NOAA Global Monitoring Laboratory")+
+theme_classic()
+      
+knitr::kable(newdata, "simple", align = "ccc")
+
+              
+```
+
+

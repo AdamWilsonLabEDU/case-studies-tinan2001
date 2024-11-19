@@ -1,7 +1,93 @@
 ---
-title: "Case Study 05"
-author: Your Name
-date: August 1, 2020
+title: "Case Study 05 - Beware the Canadians!"
+author: "Tina Ni"
+date: August 1, 2024
 output: github_document
 ---
- 
+---
+1. Generate a polygon that includes all land in NY that is within 10km of the Canadian border (not including the great lakes).
+2. Calculate area in km^2. How much land will you need to defend from the Canadians?
+---
+---
+- load packages
+---
+```{r Load Packages}
+library(spData)
+library(sf)
+library(tidyverse)
+library(units)
+library(ggplot2)
+```
+---
+- load and format data
+---
+``` {r edit the data}
+data(world)
+data("us_states")
+albers <- "+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=37.5 +lon_0=-96 +x_0=0 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs"
+
+Canada <- world |>
+  filter (name_long == "Canada")
+
+head(Canada)
+
+NYS <- us_states |>
+  filter(NAME == "New York")
+
+str(NYS)
+```
+---
+- transform NYS and Canada, and create buffer Canada
+---
+```{r Transform NYS and Canada, Buffer Canada}
+tr_Canada <- st_transform(Canada,albers)
+
+tr_NYS <- st_transform(NYS, albers)
+
+
+buffer_C  <-st_buffer(tr_Canada, 10000)
+
+```
+---
+- create a map of the buffer and nys area
+---
+``` {r create a map of the buffer and nys area}
+
+i <- st_intersection (buffer_C, tr_NYS)
+
+ggplot()+
+  geom_sf(data = i)
+
+plot <- (ggplot()+
+geom_sf(data = tr_NYS)+
+  geom_sf(data =i, fill = "red")+
+
+labs (title = "New York Land within 10 km")+
+  theme (plot.title = element_text(hjust = 0.5))
+         )
+
+plot
+```
+---
+- convert st_area and make it into a string
+---
+```{r convert st_area and make it into a string}
+
+area_m <- st_area (i)
+area_km <- set_units(area_m, km^2)
+str_num<- toString (area_km, "km")
+km <- "km^2"
+str_area <- paste(str_num,km)
+
+print(str_area)
+
+subtitle <- paste("Canadian buffer area within New York State:", str_area)
+```
+---
+- add buffer numeric area on map plot
+---
+```{r Add buffer numeric area on map plot}
+plot+
+  labs(subtitle = subtitle)
+
+```

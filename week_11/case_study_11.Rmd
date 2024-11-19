@@ -1,7 +1,103 @@
 ---
 title: "Case Study 11"
-author: Your Name
-date: August 1, 2020
+author: Tina Ni
+date: Novmember 12, 2024
 output: github_document
 ---
- 
+```{r Load libraries}
+library(tidyverse)
+library(tidycensus)
+library(spData)
+library(sf)
+library(mapview)
+library(foreach)
+library(doParallel)
+library(leaflet)
+registerDoParallel(4)
+getDoParWorkers() # check registered cores
+```
+
+```{r install Census API key}
+## census_api_key("YOUR CENSUS API KEY", install = TRUE, overwrite = TRUE)
+```
+
+```{r Get Block Level Data on 2020 Pop by Race in each Block in Buffalo.}
+race_vars <- c(
+  "Total Population" = "P1_001N",
+  "White alone" = "P1_003N",
+  "Black or African American alone" = "P1_004N",
+  "American Indian and Alaska Native alone" = "P1_005N",
+  "Asian alone" = "P1_006N",
+  "Native Hawaiian and Other Pacific Islander alone" = "P1_007N",
+  "Some Other Race alone" = "P1_008N",
+  "Two or More Races" = "P1_009N"
+)
+options(tigris_use_cache = TRUE)
+
+erie <- get_decennial (geography = "block", variables = race_vars, year = 2020, state = "NY", county = "Erie County", geometry = TRUE, sumfile = "pl", cache_table = TRUE )
+
+```
+
+```{r Crop county level data}
+extent<- c(xmin=-78.9,xmax=-78.85,ymin=42.888,ymax=42.92)
+erie_crop <- st_crop (erie, extent)
+```
+Write a foreach loop that does the following steps for each racial group in the variable column of the erie dataset and rbinds the results (e.g. .combine=rbind) into a single sf object.
+
+You may want to convert the variable column into a factor and use levels() or use unique().
+
+filter the the data to include only one race at time
+use st_sample() to generate random points for each person that resided within each polygon.
+
+If you use a pipe (%>%), you will have to set size=.$value.
+The . indicates that the column comes from the dataset that was passed to the function.
+
+See here for details on how to use the . in a pipe.
+
+convert the points from st_sample() to spatial features with st_as_sf()
+
+mutate to add a column named variable that is set to the current racial group (from the foreach loop)
+
+```{r}
+variables <- unique(erie_crop$variable)
+variables
+
+variables[1]
+# variables <- variables[c(2:8)]
+# variables
+
+```
+
+```{r}
+matrix <- matrix(ncol = 0, nrow = 0)
+df <- as.data.frame(matrix)
+```
+```{r}
+# erie_crop2 <- matrix [0,0]
+
+## test is the name because I was testing it out but at this point my computer screams at me and I don't want to run this code again to change the name of the dataset... 
+
+test <- foreach(i = 1:8,.combine=rbind) %do% 
+{
+erie_crop %>%
+filter(variable == variables[i]) %>%
+st_sample(., size= .$value, type = "random") %>%
+st_as_sf() %>%
+mutate(v = variables[i])
+}
+unique(test$v)
+```
+
+```{r}
+# t <- erie_crop %>%
+#   filter(variable == variables[1]) %>%
+#   filter(value != 0) %>%
+#   st_sample(., size= .$value, "random") %>%
+#   st_as_sf() %>%
+#   mutate(v = variables[1])
+```
+
+
+```{r}
+mapview(test, cex = 3)
+```
